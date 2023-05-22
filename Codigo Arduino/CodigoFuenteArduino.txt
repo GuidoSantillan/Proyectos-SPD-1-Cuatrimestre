@@ -1,0 +1,211 @@
+// Examen Práctico Montacargas
+// Guido Santillán DIV D
+
+// LEDS
+#define LED_VERDE 2
+#define LED_ROJO 3
+
+// DISPLAY
+#define DISPLAY_B 10
+#define DISPLAY_A 9
+#define DISPLAY_F 8
+#define DISPLAY_G 7
+#define DISPLAY_C 6
+#define DISPLAY_D 5
+#define DISPLAY_E 4
+
+// BOTONES
+#define BOTON_ABAJO 13
+#define BOTON_PAUSA 12
+#define BOTON_ARRIBA 11
+
+// Lee el estado de los botones.
+int botonSubirEstado;
+int botonPausarEstado;
+int botonBajarEstado;
+
+// Inicializa el contador y guardarValor en 0.
+int contador = 0;
+int guardarValor = 0;
+
+// Establece el valor booleano de las flags en False.
+bool flagSubir = false;
+bool flagPausar = false;
+bool flagBajar = false;
+
+void setup()
+{
+  // BOTONES
+  pinMode(BOTON_ABAJO, INPUT_PULLUP);
+  pinMode(BOTON_PAUSA, INPUT);
+  pinMode(BOTON_ARRIBA, INPUT_PULLUP);
+
+  // LEDS
+  pinMode(LED_VERDE, OUTPUT);
+  pinMode(LED_ROJO, OUTPUT);
+
+  // DISPLAY
+  pinMode(DISPLAY_B, OUTPUT);
+  pinMode(DISPLAY_A, OUTPUT);
+  pinMode(DISPLAY_F, OUTPUT);
+  pinMode(DISPLAY_G, OUTPUT);
+  pinMode(DISPLAY_C, OUTPUT);
+  pinMode(DISPLAY_D, OUTPUT);
+  pinMode(DISPLAY_E, OUTPUT);
+
+  // CONSOLA
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  digitalWrite(LED_ROJO, HIGH);
+  BotonSubir();
+  BotonBajar();
+}
+
+// Prende las luces especificas para mostrar el número requerido.
+void mostrarDisplay()
+{
+  switch (contador)
+  {
+    case 0:
+      // Display muestra el número: 0
+      prenderDisplay(HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, LOW);
+      break;
+    case 1:
+      // Display muestra el número: 1
+      prenderDisplay(LOW, HIGH, HIGH, LOW, LOW, LOW, LOW);
+      break;
+    case 2:
+      // Display muestra el número: 2
+      prenderDisplay(HIGH, HIGH, LOW, HIGH, HIGH, LOW, HIGH);
+      break;
+    case 3:
+      // Display muestra el número: 3
+      prenderDisplay(HIGH, HIGH, HIGH, HIGH, LOW, LOW, HIGH);
+      break;
+    case 4:
+      // Display muestra el número: 4
+      prenderDisplay(LOW, HIGH, HIGH, LOW, LOW, HIGH, HIGH);
+      break;
+    case 5:
+      // Display muestra el número: 5
+      prenderDisplay(HIGH, LOW, HIGH, HIGH, LOW, HIGH, HIGH);
+      break;
+    case 6:
+      // Display muestra el número: 6
+      prenderDisplay(HIGH, LOW, HIGH, HIGH, HIGH, HIGH, HIGH);
+      break;
+    case 7:
+      // Display muestra el número: 7
+      prenderDisplay(HIGH, HIGH, HIGH, LOW, LOW, LOW, LOW);
+      break;
+    case 8:
+      // Display muestra el número: 8
+      prenderDisplay(HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH);
+      break;
+    case 9:
+      // Display muestra el número: 9
+      prenderDisplay(HIGH, HIGH, HIGH, HIGH, LOW, HIGH, HIGH);
+      break;
+  }
+}
+
+// Cada segmento del display recibe LOW o HIGH para formar el número requerido en cada case del switch de mostrarDisplay.
+void prenderDisplay(int a, int b, int c, int d, int e, int f, int g)
+{
+  digitalWrite(DISPLAY_A, a);
+  digitalWrite(DISPLAY_B, b);
+  digitalWrite(DISPLAY_C, c);
+  digitalWrite(DISPLAY_D, d);
+  digitalWrite(DISPLAY_E, e);
+  digitalWrite(DISPLAY_F, f);
+  digitalWrite(DISPLAY_G, g);
+  delay(3000); // Tiempo entre cada uno de los pisos.
+  apagarDisplay();
+}
+
+// Apaga todos los displays.
+void apagarDisplay()
+{
+  digitalWrite(DISPLAY_A, LOW);
+  digitalWrite(DISPLAY_B, LOW);
+  digitalWrite(DISPLAY_C, LOW);
+  digitalWrite(DISPLAY_D, LOW);
+  digitalWrite(DISPLAY_E, LOW);
+  digitalWrite(DISPLAY_F, LOW);
+  digitalWrite(DISPLAY_G, LOW);
+}
+
+// Sube los pisos del montacargas.
+void BotonSubir()
+{
+  botonSubirEstado = digitalRead(BOTON_ARRIBA); // Lee el estado de BOTON_ARRIBA.
+  if (botonSubirEstado == 0)
+  {
+    flagSubir = true; // Si el botón está presionado, la bandera es igual a True.
+  }
+
+  if (flagSubir == true)
+  {
+    for (contador = guardarValor; contador < 10; contador++) // Inicializa contador y guardarValor en 0 y lo itera hasta llegar a 9.
+    {
+      digitalWrite(LED_ROJO, LOW); 
+      digitalWrite(LED_VERDE, HIGH);
+
+      guardarValor = contador; // Iguala guardarValor a contador para que este guarde su valor para cuando contador sea mayor que 10 y rompa la iteración del bucle for (BotonPausar).
+      mostrarDisplay(); // Muestra el display de 7 segmentos según el valor del contador.
+      BotonPausar(11); // Llama a la función BotonPausar solamente si BOTON_ABAJO está siendo presionado para romper la iteración del for.
+
+      digitalWrite(LED_VERDE, LOW);
+    }
+
+    flagSubir = false;
+  }
+}
+
+// Pausa el montacargas.
+void BotonPausar(int valorBreak)
+{
+  botonPausarEstado = digitalRead(BOTON_PAUSA); // Lee el estado de BOTON_PAUSA.
+
+  if (botonPausarEstado == 1)
+  {
+    flagPausar = true; // 
+  }
+  if (flagPausar == true)
+  {
+    digitalWrite(LED_ROJO, HIGH); 
+    digitalWrite(LED_VERDE, LOW); 
+
+    mostrarDisplay(); 
+    contador = valorBreak; // Altera el valor de contador igualándolo a valorBreak para que cuando este sea llamado en BotonSubir(11) o BotonBajar(-11) rompa con la condición del respectivo for.
+  }
+  flagPausar = false;
+}
+
+// Baja los pisos del montacargas.
+void BotonBajar()
+{
+  botonBajarEstado = digitalRead(BOTON_ABAJO); // Lee el estado de BOTON_ABAJO.
+  if (botonBajarEstado == 0)
+  {
+    flagBajar = true; 
+  }
+  if (flagBajar == true)
+  {
+    for (contador = guardarValor; contador >= 0; contador--) // Inicializa contador y guardarValor en 0 y lo itera hasta llegar a 0.
+    {
+      digitalWrite(LED_ROJO, LOW); 
+      digitalWrite(LED_VERDE, HIGH); 
+
+      guardarValor = contador; // Iguala guardarValor a contador para que este guarde su valor para cuando contador sea menor que 0 y rompa la iteración del bucle for (BotonPausar).
+      mostrarDisplay(); 
+      BotonPausar(-11); // Llama a la función BotonPausar solamente si BOTON_ABAJO está siendo presionado para romper la iteración del for.
+
+      digitalWrite(LED_VERDE, LOW); 
+    }
+    flagBajar = false;
+  }
+}
