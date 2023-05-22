@@ -89,6 +89,9 @@ La función `BotonBajar()` funciona de manera similar a `BotonSubir()`, pero en 
 - Si se presiona, cambia el valor de la bandera a True y realiza un bucle desde el valor actual del contador hasta 0.
 - Durante el bucle, enciende el LED verde, muestra el número de piso en el display y verifica si se presiona el botón de pausa para romper el bucle.
 
-## Limitaciones y Mejoras Futuras
+## Limitaciones
 El boton que pausa el montacargas debe ser mantenido o presionado justo antes de que el display de 7 segmentos muestre el siguiente número,de lo contrario, no se podra pausar.
+
+## Diagrama esquematico
+![Sistema esquematico Guido Santillan](https://github.com/GuidoSantillan/Proyectos-SPD-1-Cuatrimestre/assets/93514202/fc16b900-03ee-4030-a6a8-944b30a00be4)
 
